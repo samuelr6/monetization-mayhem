@@ -8,6 +8,7 @@ import { Player } from './player.js';
 import { Level } from './levels.js';
 import { SPECIAL_INFO, UPGRADES } from './floors.js';
 import * as confetti from './confetti.js';
+import * as music from './music.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -53,6 +54,8 @@ function showBriefing() {
   game.difficulty = CONFIG.difficultyLevels[game.difficultyKey];
   hideOverlay(overlayTitle);
   showOverlay(overlayBriefing);
+  // Mount the Apple Music mini-player so it's ready to play during briefing.
+  music.start();
 }
 
 // Step 2: briefing -> actual run. Triggered by the "Let's Climb" button.

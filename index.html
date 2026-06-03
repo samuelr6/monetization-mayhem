@@ -111,6 +111,23 @@
     }
     ul.milestones b { color: var(--accent); }
 
+    /* Floating Apple Music mini-player — appears bottom-right once the climb
+       starts. User taps play on the embed itself (browsers block real autoplay
+       on cross-origin iframes), and a JS timer reloads it to loop the track. */
+    #music {
+      position: fixed; right: 16px; bottom: 16px;
+      width: 320px; max-width: calc(100vw - 32px);
+      z-index: 50;
+      display: none;
+      border-radius: 12px; overflow: hidden;
+      box-shadow: 0 10px 30px rgba(0,0,0,.55);
+    }
+    #music.on { display: block; }
+    #music iframe {
+      width: 100%; height: 150px; border: 0; background: transparent;
+      display: block;
+    }
+
     /* Confetti canvas sits behind the message card but in front of the dark
        backdrop, so falling pieces are visible around the card edges. */
     #confetti {
@@ -184,6 +201,10 @@
         </div>
       </div>
     </div>
+
+    <!-- Apple Music mini-player. Filled in by main.js when Start is clicked
+         so the iframe only loads once the player commits to climbing. -->
+    <div id="music" aria-label="Background music"></div>
 
     <!-- Generic message overlay (review / special / win / lose) -->
     <div id="overlay-msg" class="overlay hidden">
