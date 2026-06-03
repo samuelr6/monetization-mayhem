@@ -6,7 +6,10 @@
 // track loops. "Long Live (Taylor's Version)" is ~5:17, so we cycle just past that.
 // ============================================================================
 
-const SRC = 'https://embed.music.apple.com/us/album/long-live-taylors-version/1690839749?i=1690840818';
+// `&autoplay=1` is a hint; Apple's embed may ignore it, but it's harmless and
+// some browsers route it through their autoplay-allowance logic when the page
+// already has user activation (which it does by the time Liftoff fires).
+const SRC = 'https://embed.music.apple.com/us/album/long-live-taylors-version/1690839749?i=1690840818&autoplay=1';
 const LOOP_MS = 322 * 1000; // 5:22 — small buffer past the 5:17 runtime
 
 let host = null;

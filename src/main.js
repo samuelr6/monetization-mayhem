@@ -54,8 +54,6 @@ function showBriefing() {
   game.difficulty = CONFIG.difficultyLevels[game.difficultyKey];
   hideOverlay(overlayTitle);
   showOverlay(overlayBriefing);
-  // Mount the Apple Music mini-player so it's ready to play during briefing.
-  music.start();
 }
 
 // Step 2: briefing -> actual run. Triggered by the "Let's Climb" button.
@@ -353,8 +351,10 @@ function showWinSummary() {
     <button id="msg-restart">Play Again</button>`;
   showOverlay(overlayMsg);
   confetti.start();
+  music.start();
   document.getElementById('msg-restart').addEventListener('click', () => {
     confetti.stop();
+    music.stop();
     hideOverlay(overlayMsg);
     game.state = 'title';
     showOverlay(overlayTitle);
