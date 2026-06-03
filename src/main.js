@@ -17,9 +17,11 @@ const renderer = new Renderer(ctx, camera);
 
 // DOM overlays
 const overlayTitle = document.getElementById('overlay-title');
+const overlayBriefing = document.getElementById('overlay-briefing');
 const overlayMsg = document.getElementById('overlay-msg');
 const msgCard = document.getElementById('msg-card');
-document.getElementById('btn-start').addEventListener('click', () => startGame());
+document.getElementById('btn-start').addEventListener('click', () => showBriefing());
+document.getElementById('btn-begin').addEventListener('click', () => beginRun());
 
 // difficulty radio group on title screen
 const diffRadios = () => Array.from(document.querySelectorAll('input[name="difficulty"]'));
@@ -43,18 +45,29 @@ const game = {
 };
 
 // ---- Lifecycle -------------------------------------------------------------
-function startGame() {
+// Step 1: title -> briefing. Lock in the difficulty here so it reflects what
+// the player selected on the title screen.
+function showBriefing() {
   game.difficultyKey = getSelectedDifficultyKey();
   game.difficulty = CONFIG.difficultyLevels[game.difficultyKey];
+  hideOverlay(overlayTitle);
+  showOverlay(overlayBriefing);
+}
+
+// Step 2: briefing -> actual run. Triggered by the "Let's Climb" button.
+function beginRun() {
   game.player = new Player(game.difficulty);
   game.floor = 1;
   game.time = 0;
   game.rocket = null;
-  hideOverlay(overlayTitle);
+  hideOverlay(overlayBriefing);
   hideOverlay(overlayMsg);
   enterFloor(1);
   game.state = 'play';
 }
+
+// Back-compat shim for the debug hook + any restart paths.
+function startGame() { showBriefing(); }
 
 function enterFloor(n) {
   game.floor = n;

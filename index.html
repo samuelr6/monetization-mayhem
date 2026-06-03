@@ -85,6 +85,31 @@
       background: var(--accent); color: #0c1322;
     }
     .diff-desc { color:#8a96b4; font-size:13px; margin: 2px 0 6px; min-height: 18px; }
+
+    /* Briefing modal */
+    .controls-list {
+      display: grid; grid-template-columns: auto 1fr; gap: 8px 16px;
+      align-items: center; font-size: 15px; color: #e7ecf8;
+    }
+    .controls-list .kbd {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px; font-weight: 700;
+      background: #0c1322; color: var(--accent);
+      border: 1px solid #39405c; border-radius: 6px;
+      padding: 4px 10px; text-align: center; min-width: 56px;
+    }
+    ul.milestones {
+      list-style: none; padding: 0; margin: 0;
+      display: flex; flex-direction: column; gap: 8px;
+      font-size: 14px; color: #e7ecf8; line-height: 1.45;
+    }
+    ul.milestones li {
+      padding: 8px 12px;
+      background: rgba(12,19,34,0.55);
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+    }
+    ul.milestones b { color: var(--accent); }
   </style>
 </head>
 <body>
@@ -111,7 +136,41 @@
         </div>
         <div class="diff-desc" id="diff-desc">Balanced enemy pace and player health.</div>
         <button id="btn-start">Start Climbing</button>
-        <div class="muted">Arrows to move, ↑ jump, ↓ duck, Space to block, E to interact.</div>
+      </div>
+    </div>
+
+    <!-- Briefing modal: shown after Start Climbing, before play begins -->
+    <div id="overlay-briefing" class="overlay hidden">
+      <div class="card" style="max-width:560px;text-align:left;">
+        <h1 style="font-size:26px;margin-bottom:4px;text-align:center;">Before You Climb</h1>
+        <h2 style="font-size:15px;margin-bottom:14px;text-align:center;color:#cdd6ee;">
+          A quick briefing, Zoe.
+        </h2>
+
+        <h3 style="margin:6px 0 8px;color:#f4c95d;font-size:15px;letter-spacing:.5px;">CONTROLS</h3>
+        <div class="controls-list">
+          <div class="kbd">&larr; &rarr;</div><div>Move left and right</div>
+          <div class="kbd">&uarr;</div><div>Jump</div>
+          <div class="kbd">&darr;</div><div>Duck</div>
+          <div class="kbd">Space</div><div>Block incoming projectiles</div>
+          <div class="kbd">E</div><div>Interact on special floors</div>
+        </div>
+
+        <h3 style="margin:18px 0 8px;color:#f4c95d;font-size:15px;letter-spacing:.5px;">MILESTONES</h3>
+        <ul class="milestones">
+          <li><b>Floor 3 — Cafeteria.</b> Power-ups to refuel for the climb.</li>
+          <li><b>Floor 16 — Sanctuary.</b> Spend incremental bookings on upgrades.</li>
+          <li><b>Floor 28 — Top of LinkedIn.</b> Exit here for a win, or keep climbing to see if you can make it to the top of the Empire State Building!</li>
+        </ul>
+
+        <p style="margin:14px 0 4px;font-size:14px;color:#cdd6ee;">
+          <b style="color:#f4c95d;">Incremental bookings</b> you collect can be spent
+          on power-ups in the future.
+        </p>
+
+        <div style="text-align:center;margin-top:10px;">
+          <button id="btn-begin">Let's Climb</button>
+        </div>
       </div>
     </div>
 
