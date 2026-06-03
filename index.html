@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Monetization Mayhem</title>
+  <style>
+    :root { --accent: #f4c95d; --pink: #e2477e; }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0; height: 100%;
+      background: #0c1322;
+      color: #f4f7ff;
+      font-family: -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      overflow: hidden;
+    }
+    #stage {
+      position: relative;
+      width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    #game {
+      background: #1b2a4a;
+      border-radius: 10px;
+      box-shadow: 0 20px 60px rgba(0,0,0,.5);
+      max-width: 100%; max-height: 100%;
+      image-rendering: -webkit-optimize-contrast;
+    }
+
+    /* Overlays */
+    .overlay {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; text-align: center;
+      background: rgba(8, 14, 28, 0.82);
+      backdrop-filter: blur(3px);
+      padding: 24px;
+    }
+    /* Title overlay: transparent background so the hero scene shows through */
+    #overlay-title { background: transparent; backdrop-filter: none;
+                     justify-content: flex-end; padding-bottom: 30px; }
+    .overlay.hidden { display: none; }
+    .card {
+      background: linear-gradient(160deg, #20304f, #16223c);
+      border: 2px solid var(--accent);
+      border-radius: 16px;
+      padding: 28px 34px;
+      max-width: 620px;
+      box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    }
+    h1 { margin: 0 0 6px; font-size: 38px; letter-spacing: .5px;
+         color: var(--accent); text-shadow: 0 3px 0 rgba(0,0,0,.35); }
+    h2 { margin: 0 0 14px; font-size: 26px; color: var(--pink); }
+    p { margin: 8px 0; line-height: 1.5; color: #cdd6ee; }
+    .keys { display: grid; grid-template-columns: auto auto; gap: 6px 18px;
+            justify-content: center; margin: 14px 0; font-size: 15px; }
+    .keys b { color: var(--accent); }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 26px;
+                  margin: 16px 0; font-size: 17px; }
+    .stats-grid .v { color: var(--accent); font-weight: 700; }
+    button {
+      margin-top: 16px;
+      font-size: 18px; font-weight: 700;
+      color: #0c1322; background: var(--accent);
+      border: none; border-radius: 999px;
+      padding: 12px 30px; cursor: pointer;
+      transition: transform .08s ease, filter .12s ease;
+    }
+    button:hover { filter: brightness(1.07); }
+    button:active { transform: translateY(1px) scale(.99); }
+    .muted { color: #8a96b4; font-size: 13px; margin-top: 10px; }
+    .pill { display:inline-block; background:#0c1322; border:1px solid #39405c;
+            border-radius:999px; padding:4px 12px; margin:4px; font-size:14px; }
+
+    /* Difficulty toggle on title screen */
+    .difficulty { display: inline-flex; gap: 6px; margin: 10px 0 4px;
+                  background: rgba(8,14,28,0.55); border-radius: 999px; padding: 4px; }
+    .difficulty label {
+      cursor: pointer; padding: 8px 18px; border-radius: 999px;
+      font-weight: 700; font-size: 14px; color: #cdd6ee;
+      transition: background .15s ease, color .15s ease;
+    }
+    .difficulty input { display: none; }
+    .difficulty input:checked + label {
+      background: var(--accent); color: #0c1322;
+    }
+    .diff-desc { color:#8a96b4; font-size:13px; margin: 2px 0 6px; min-height: 18px; }
+  </style>
+</head>
+<body>
+  <div id="stage">
+    <canvas id="game" width="960" height="540"></canvas>
+
+    <!-- Title / Start (canvas paints the hero scene behind this card) -->
+    <div id="overlay-title" class="overlay">
+      <div class="card" style="padding:18px 28px;max-width:560px;">
+        <h1 style="font-size:30px;margin-bottom:2px;">MONETIZATION MAYHEM</h1>
+        <h2 style="font-size:18px;margin-bottom:6px;">Zoe's Climb to Floor 86</h2>
+        <p style="margin:6px 0 10px;font-size:14px;line-height:1.45;color:#cdd6ee;">
+          <b style="color:#f4c95d;">Objective:</b> Reach the top of the building
+          and collect as many <b style="color:#f4c95d;">incremental bookings</b>
+          as possible while avoiding unnecessary and unreasonable asks from your XFPs.
+        </p>
+        <div class="difficulty" role="radiogroup" aria-label="Difficulty">
+          <input type="radio" id="diff-easy"   name="difficulty" value="easy">
+          <label for="diff-easy">Easy</label>
+          <input type="radio" id="diff-normal" name="difficulty" value="normal" checked>
+          <label for="diff-normal">Normal</label>
+          <input type="radio" id="diff-hard"   name="difficulty" value="hard">
+          <label for="diff-hard">Hard</label>
+        </div>
+        <div class="diff-desc" id="diff-desc">Balanced enemy pace and player health.</div>
+        <button id="btn-start">Start Climbing</button>
+        <div class="muted">Arrows to move, ↑ jump, ↓ duck, Space to block, E to interact.</div>
+      </div>
+    </div>
+
+    <!-- Generic message overlay (review / special / win / lose) -->
+    <div id="overlay-msg" class="overlay hidden">
+      <div class="card" id="msg-card"></div>
+    </div>
+  </div>
+
+  <script>
+    // Live description for the difficulty toggle
+    const DIFF_DESC = {
+      easy:   'Enemies throw less often; you carry more health.',
+      normal: 'Balanced enemy pace and player health.',
+      hard:   'Faster, more frequent projectiles; less starting health.',
+    };
+    document.querySelectorAll('input[name="difficulty"]').forEach((r) => {
+      r.addEventListener('change', () => {
+        document.getElementById('diff-desc').textContent = DIFF_DESC[r.value] || '';
+      });
+    });
+  </script>
+  <script type="module" src="./src/main.js"></script>
+</body>
+</html>
