@@ -7,6 +7,7 @@ import { Renderer } from './render.js';
 import { Player } from './player.js';
 import { Level } from './levels.js';
 import { SPECIAL_INFO, UPGRADES } from './floors.js';
+import * as confetti from './confetti.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -348,7 +349,9 @@ function showWinSummary() {
     <p class="muted">Congratulations on the send-off. 🎉</p>
     <button id="msg-restart">Play Again</button>`;
   showOverlay(overlayMsg);
+  confetti.start();
   document.getElementById('msg-restart').addEventListener('click', () => {
+    confetti.stop();
     hideOverlay(overlayMsg);
     game.state = 'title';
     showOverlay(overlayTitle);

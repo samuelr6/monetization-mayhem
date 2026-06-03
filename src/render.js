@@ -733,6 +733,19 @@ export class Renderer {
     ctx.font = '16px sans-serif';
     ctx.fillStyle = '#cdd6ee';
     ctx.fillText('— Zoe, post-LinkedIn —', W / 2, 86);
+
+    // "Good luck, Zoe!" — big yellow lettering at the bottom of the rocket scene
+    const wishAlpha = Math.min(1, Math.max(0, (t - 0.5) * 1.5));
+    ctx.globalAlpha = wishAlpha;
+    ctx.font = 'bold 56px sans-serif';
+    const wishGrad = ctx.createLinearGradient(0, H - 80, 0, H - 20);
+    wishGrad.addColorStop(0, '#ffd166');
+    wishGrad.addColorStop(1, '#f4c95d');
+    ctx.fillStyle = wishGrad;
+    ctx.shadowColor = 'rgba(244,201,93,0.7)';
+    ctx.shadowBlur = 24;
+    ctx.fillText('Good luck, Zoe!', W / 2, H - 30);
+    ctx.shadowBlur = 0;
     ctx.textAlign = 'left';
     ctx.restore();
   }
