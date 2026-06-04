@@ -22,9 +22,22 @@ const renderer = new Renderer(ctx, camera);
 const overlayTitle = document.getElementById('overlay-title');
 const overlayBriefing = document.getElementById('overlay-briefing');
 const overlayMsg = document.getElementById('overlay-msg');
+const overlayLeaderboard = document.getElementById('overlay-leaderboard');
 const msgCard = document.getElementById('msg-card');
 document.getElementById('btn-start').addEventListener('click', () => showBriefing());
 document.getElementById('btn-begin').addEventListener('click', () => beginRun());
+document.getElementById('btn-leaderboard').addEventListener('click', () => openLeaderboard());
+document.getElementById('btn-leaderboard-close').addEventListener('click', () => {
+  overlayLeaderboard.classList.add('hidden');
+});
+
+async function openLeaderboard() {
+  const target = document.getElementById('lb-modal-table');
+  target.innerHTML = '<p class="muted" style="text-align:center;">Loading…</p>';
+  overlayLeaderboard.classList.remove('hidden');
+  const entries = await fetchLeaderboard();
+  target.innerHTML = renderLeaderboardHTML(entries);
+}
 
 // difficulty radio group on title screen
 const diffRadios = () => Array.from(document.querySelectorAll('input[name="difficulty"]'));

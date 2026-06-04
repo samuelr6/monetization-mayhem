@@ -164,6 +164,22 @@
         </div>
         <div class="diff-desc" id="diff-desc">Balanced enemy pace and player health.</div>
         <button id="btn-start">Start Climbing</button>
+        <button id="btn-leaderboard" style="background:transparent;color:#cdd6ee;
+                border:1px solid #39405c;margin-left:8px;padding:11px 22px;font-size:15px;">
+          View Leaderboard
+        </button>
+      </div>
+    </div>
+
+    <!-- Leaderboard modal, launched from the title screen. -->
+    <div id="overlay-leaderboard" class="overlay hidden">
+      <div class="card" style="max-width:520px;">
+        <h1 style="color:#f4c95d;font-size:30px;margin-bottom:4px;">🏆 Leaderboard</h1>
+        <h2 style="font-size:15px;color:#cdd6ee;margin-bottom:14px;">Top monetizers</h2>
+        <div id="lb-modal-table" style="min-height:60px;">
+          <p class="muted" style="text-align:center;">Loading…</p>
+        </div>
+        <button id="btn-leaderboard-close" style="margin-top:18px;">Back</button>
       </div>
     </div>
 
