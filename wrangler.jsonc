@@ -1,0 +1,17 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "monetization-mayhem",
+  "main": "worker.js",
+  "compatibility_date": "2025-01-15",
+  "assets": {
+    "directory": "./",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
+  },
+  "kv_namespaces": [
+    {
+      "binding": "LEADERBOARD_KV",
+      "id": "3a8d8ee9889845679f09ecef07c6eee2"
+    }
+  ]
+}

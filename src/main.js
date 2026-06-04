@@ -9,6 +9,7 @@ import { Level } from './levels.js';
 import { SPECIAL_INFO, UPGRADES } from './floors.js';
 import * as confetti from './confetti.js';
 import * as music from './music.js';
+import { fetchLeaderboard, submitScore, renderLeaderboardHTML } from './leaderboard.js';
 
 const canvas = document.getElementById('game');
 const ctx = canvas.getContext('2d');
@@ -357,6 +358,8 @@ function showWinSummary() {
   const secs = Math.floor(game.time % 60);
   const headline = game.rocket?.reason === 'linkedin'
     ? 'Exited at Floor 28' : 'Summited Floor 86';
+  const finalScore = computeScore();
+  const finalFloor = game.floor;
   msgCard.innerHTML = `
     <h1 style="color:#f4c95d">🚀 Liftoff</h1>
     <h2>${headline}</h2>
@@ -375,13 +378,60 @@ function showWinSummary() {
       <div style="font-size:13px;color:#cdd6ee;letter-spacing:1.5px;">MONETIZATION SCORE</div>
       <div style="font-size:42px;font-weight:800;color:#f4c95d;
                   text-shadow:0 2px 0 rgba(0,0,0,.35);line-height:1.1;margin-top:4px;">
-        ${fmtScore(computeScore())}
+        ${fmtScore(finalScore)}
+      </div>
+    </div>
+    <div id="lb-section" style="margin:14px 0 4px;padding:12px 14px;border-radius:10px;
+                background:rgba(12,19,34,0.55);border:1px solid #39405c;">
+      <div style="font-size:13px;color:#cdd6ee;letter-spacing:1.5px;text-align:center;margin-bottom:8px;">
+        LEADERBOARD
+      </div>
+      <div id="lb-form" style="display:flex;gap:8px;align-items:center;margin-bottom:10px;">
+        <input id="lb-name" type="text" maxlength="24" placeholder="Your name"
+          style="flex:1;padding:8px 12px;border-radius:8px;border:1px solid #39405c;
+                 background:#0c1322;color:#e7ecf8;font-size:14px;font-family:inherit;">
+        <button id="lb-submit" style="margin:0;padding:8px 16px;font-size:14px;">Submit</button>
+      </div>
+      <div id="lb-table" style="min-height:40px;">
+        <p class="muted" style="text-align:center;margin:8px 0;">Loading…</p>
       </div>
     </div>
     <button id="msg-restart">Play Again</button>`;
   showOverlay(overlayMsg);
   confetti.start();
   music.start();
+
+  // Load current leaderboard immediately.
+  const lbTable = document.getElementById('lb-table');
+  fetchLeaderboard().then((entries) => {
+    lbTable.innerHTML = renderLeaderboardHTML(entries);
+  });
+
+  // Submit flow: post the score, then re-render with the user's row highlighted.
+  const submitBtn = document.getElementById('lb-submit');
+  const nameInput = document.getElementById('lb-name');
+  const doSubmit = async () => {
+    const name = nameInput.value.trim();
+    if (!name) { nameInput.focus(); return; }
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Submitting…';
+    const top = await submitScore({ name, score: finalScore, floor: finalFloor });
+    if (top) {
+      // Find this submission's key. The server stores `at`, so we match by
+      // name + score and pick the most recent.
+      const mine = [...top].reverse().find((e) => e.name === name && e.score === finalScore);
+      const key = mine ? `${mine.name}:${mine.score}:${mine.at}` : null;
+      document.getElementById('lb-form').style.display = 'none';
+      lbTable.innerHTML = renderLeaderboardHTML(top, key);
+    } else {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Submit';
+      lbTable.innerHTML = '<p class="muted" style="text-align:center;color:#ef476f;">Submission failed — try again.</p>';
+    }
+  };
+  submitBtn.addEventListener('click', doSubmit);
+  nameInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') doSubmit(); });
+
   document.getElementById('msg-restart').addEventListener('click', () => {
     confetti.stop();
     music.stop();
