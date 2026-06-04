@@ -177,7 +177,7 @@ function update(dt) {
   for (const c of level.coins) {
     if (c.taken) continue;
     if (rectsOverlap({ x: c.x - c.r, y: c.y - c.r, w: c.r * 2, h: c.r * 2 }, p.rect)) {
-      c.taken = true; p.coins++;
+      c.taken = true; p.coins++; p.coinsCollected++;
     }
   }
 
@@ -222,6 +222,26 @@ function render() {
     renderer.flashBanner(game.banner.text, Math.max(0, Math.min(1, a)));
   }
 }
+
+// ---- Scoring ---------------------------------------------------------------
+// Monetization Score: rewards coin collection (with a strong hoarding bias),
+// remaining health, and speed; multiplied by floors climbed.
+//   coin score   = collected × 2.5  + remaining × 7.5   (25% / 75% split)
+//   health score = remainingHealth × 5
+//   time bonus   = max(0, 3000 − seconds × 2.5)         (zeroes out at ~20 min)
+//   total        = (coinScore + healthScore + timeBonus) × floor
+function computeScore() {
+  const p = game.player;
+  if (!p) return 0;
+  const collected = p.coinsCollected || 0;
+  const remaining = p.coins || 0;
+  const coinScore = collected * 2.5 + remaining * 7.5;
+  const healthScore = Math.max(0, p.health) * 5;
+  const timeBonus = Math.max(0, 3000 - game.time * 2.5);
+  return Math.round((coinScore + healthScore + timeBonus) * game.floor);
+}
+
+function fmtScore(n) { return n.toLocaleString('en-US'); }
 
 // ---- Screens (DOM overlays) ------------------------------------------------
 function showOverlay(el) { el.classList.remove('hidden'); }
@@ -280,6 +300,7 @@ function openLinkedInReview() {
       <div>Things blocked</div><div class="v">${p.stats.blocked}</div>
       <div>Things avoided</div><div class="v">${p.stats.dodged}</div>
       <div>Incremental bookings</div><div class="v">$${p.coins}</div>
+      <div>Monetization Score</div><div class="v">${fmtScore(computeScore())}</div>
     </div>
     <p class="muted">You've cleared the LinkedIn tower. Take the elevator off, or
        keep climbing to Floor 86.</p>
@@ -348,6 +369,15 @@ function showWinSummary() {
       <div>Incremental bookings</div><div class="v">$${p.coins}</div>
     </div>
     <p class="muted">Congratulations on the send-off. 🎉</p>
+    <div style="margin:16px 0 4px;padding:14px 16px;border-radius:12px;
+                background:linear-gradient(160deg,#0c1322,#1b2a4a);
+                border:1px solid #f4c95d;">
+      <div style="font-size:13px;color:#cdd6ee;letter-spacing:1.5px;">MONETIZATION SCORE</div>
+      <div style="font-size:42px;font-weight:800;color:#f4c95d;
+                  text-shadow:0 2px 0 rgba(0,0,0,.35);line-height:1.1;margin-top:4px;">
+        ${fmtScore(computeScore())}
+      </div>
+    </div>
     <button id="msg-restart">Play Again</button>`;
   showOverlay(overlayMsg);
   confetti.start();

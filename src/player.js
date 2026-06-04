@@ -22,7 +22,8 @@ export class Player {
     this.health = this.maxHealth;
     this.stamina = p.blockStamina;
     this.invuln = 0;
-    this.coins = 0;
+    this.coins = 0;            // spendable bookings (decremented at the Sanctuary)
+    this.coinsCollected = 0;   // lifetime collected (never decremented; feeds final score)
 
     // coffee boost
     this.coffeeFloorsLeft = 0;
