@@ -9,6 +9,7 @@ import { Level } from './levels.js';
 import { SPECIAL_INFO, UPGRADES } from './floors.js';
 import * as confetti from './confetti.js';
 import * as music from './music.js';
+import * as bgm from './bgm.js';
 import { fetchLeaderboard, submitScore, renderLeaderboardHTML } from './leaderboard.js';
 
 const canvas = document.getElementById('game');
@@ -80,6 +81,9 @@ function beginRun() {
   hideOverlay(overlayMsg);
   enterFloor(1);
   game.state = 'play';
+  // Kick off the chiptune background loop. The button click counts as the
+  // gesture the browser needs to allow audio.
+  bgm.start();
 }
 
 // Back-compat shim for the debug hook + any restart paths.
@@ -363,6 +367,8 @@ function winGame(reason = 'summit') {
   game.state = 'rocket';
   game.rocket = { t: 0, reason };
   hideOverlay(overlayMsg);
+  // Cut the chiptune so the rocket scene and Liftoff Apple Music can breathe.
+  bgm.stop();
 }
 
 function showWinSummary() {
@@ -456,6 +462,7 @@ function showWinSummary() {
 
 function loseGame() {
   game.state = 'lose';
+  bgm.stop();
   msgCard.innerHTML = `
     <h1 style="color:#ef476f">Burned Out</h1>
     <h2>Floor ${game.floor}</h2>
