@@ -80,7 +80,7 @@ export const CONFIG = {
     ],
     xfp: [
       'Can your team do this?',
-      "It's pricing's fault",
+      "We HATE iLEP",
       'We need to evolve the commercial model?',
     ],
   },

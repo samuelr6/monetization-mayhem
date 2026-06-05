@@ -62,7 +62,7 @@ offline.
 - Collect **$** of incremental bookings to spend on upgrades.
 - **Floors 1–13:** Sales reps throw pricing sheets ("Ballpark pricing!", …).
 - **Floors 14–29:** Sales reps + early XFPs mixed together.
-- **Floors 30–58:** Cross-functional partners throw calculators ("It's pricing's fault", …).
+- **Floors 30–58:** Cross-functional partners throw calculators ("We HATE iLEP", …).
 - **Floors 59–86:** A mix of both, all demanding your time.
 
 ### Special floors
